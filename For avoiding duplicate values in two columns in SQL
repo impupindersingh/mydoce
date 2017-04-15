@@ -1,0 +1,24 @@
+
+
+If this is needed in general (not only for this Insert), you should add a UNIQUE constraint on the (type, name) combination:
+
+ALTER TABLE models
+  ADD UNIQUE KEY type_name_U (type, name) ;
+
+Then you can simply add rows and if the combination exists in the table, the Insert will fail:
+
+INSERT INTO  models(type, name)
+  VALUES (1, 'test') ;
+
+For one-time check only, try this instead:
+
+INSERT INTO  models(type, name)
+  SELECT 1, 'test'
+  FROM dual
+  WHERE NOT EXISTS
+        ( SELECT *
+          FROM models
+          WHERE type = 1 
+            AND name = 'test'
+        )
+
